@@ -1,0 +1,26 @@
+{
+  "name": "TreeLaundry-API",
+  "version": "1.0.0",
+  "description": "Treelaundry API",
+  "main": "server.js",
+  "repository": "https://github.com/isaacpz/TreeLaundry",
+  "author": "Stanford Class of 2021",
+  "license": "GNU",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.15.4",
+    "https": "^1.0.0",
+    "mongoose": "^4.11.10",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1"
+  },
+  "scripts": {
+    "transpile": "babel src --watch -d lib"
+  },
+  "devDependencies": {
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-plugin-transform-regenerator": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}
