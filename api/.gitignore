@@ -1,2 +1,5 @@
 yarn.lock
 settings.js
+
+#Compiled code
+lib/

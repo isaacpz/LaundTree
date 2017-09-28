@@ -48,6 +48,7 @@ var RoomListScraper = function () {
 
               rooms.forEach(function (room) {
                 room.schoolId = schoolId;
+                //Insert if not exists
                 _hall2.default.update({ schoolId: schoolId, name: room.name }, { $setOnInsert: room }, { upsert: true }, function (err, numUpdated) {});
               });
 

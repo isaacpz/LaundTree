@@ -15,6 +15,7 @@ export default class RoomListScraper {
 		let rooms = await this.getRoomsFromServer(schoolId);
 		rooms.forEach(function(room) {
 			room.schoolId = schoolId;
+			//Insert if not exists
 			Hall.update({schoolId: schoolId, name: room.name}, {$setOnInsert: room}, {upsert: true}, function(err, numUpdated) {
 
 			});

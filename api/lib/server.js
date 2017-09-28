@@ -23,9 +23,11 @@ setInterval(function () {
 }, 60 * 60 * 1000);
 
 //Every minute, update all washers
-setInterval(function _callee2() {
+setInterval(updateHalls, 60 * 1000);
+
+function updateHalls() {
   var hallStream;
-  return regeneratorRuntime.async(function _callee2$(_context2) {
+  return regeneratorRuntime.async(function updateHalls$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
@@ -68,4 +70,6 @@ setInterval(function _callee2() {
       }
     }
   }, null, this);
-}, 60 * 1000);
+}
+
+updateHalls();

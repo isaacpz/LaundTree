@@ -10,6 +10,7 @@ var Schema = mongoose.Schema;
 exports.default = mongoose.model('halls', new Schema({
   schoolId: String,
   name: String,
+  last_updated: { type: Date, default: new Date() },
   id: Number,
   machines: [{
     number: Number,

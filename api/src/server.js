@@ -12,7 +12,9 @@ setInterval(function() {
 }, 60 * 60 * 1000);
 
 //Every minute, update all washers
-setInterval(async function() {
+setInterval(updateHalls, 60 * 1000);
+
+async function updateHalls() {
   let hallStream = Hall.find().stream();
 
   hallStream.on('data', async function(doc) {
@@ -25,4 +27,6 @@ setInterval(async function() {
   }).on('error', function(err) {
     console.log(err);
   });
-}, 60 * 1000);
+}
+
+updateHalls();
