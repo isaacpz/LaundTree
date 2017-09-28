@@ -3,5 +3,5 @@ var Schema = mongoose.Schema;
 
 module.exports = mongoose.model('schools', new Schema({
   name: String,
-  id: Number
+  id: String
 }));

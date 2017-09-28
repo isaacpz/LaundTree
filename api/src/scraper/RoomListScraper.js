@@ -10,17 +10,26 @@ import Hall from '../io/models/hall';
 
 export default class RoomListScraper {
 
-	async updateRoomsOnDatabase(schoolId) {
-		console.log("Updating room list for " + schoolId + " on MongoDB");
-		let rooms = await this.getRoomsFromServer(schoolId);
-		rooms.forEach(function(room) {
-			room.schoolId = schoolId;
-			//Insert if not exists
-			Hall.update({schoolId: schoolId, name: room.name}, {$setOnInsert: room}, {upsert: true}, function(err, numUpdated) {
-
-			});
-		});
-	}
+  async updateRoomsOnDatabase(schoolId) {
+    try {
+      console.log("Updating room list for " + schoolId + " on MongoDB");
+      let rooms = await this.getRoomsFromServer(schoolId);
+      for (let room of rooms) {
+        room.schoolId = schoolId;
+        //Insert if not exists
+        Hall.update({
+          schoolId: schoolId,
+          name: room.name
+        }, {
+          $setOnInsert: room
+        }, {
+          upsert: true
+        }, function(err, numUpdated) {});
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   async getRoomsFromServer(schoolId) { // once a day
     try {
@@ -36,21 +45,28 @@ export default class RoomListScraper {
         }
         let tr = trs[i];
         let tds = tr.children;
-        halls.push({id: i - 1, name: tds[3].children[1].children[0].children[1].children[0].data.trim()});
+        halls.push({
+          id: i - 1,
+          name: tds[3].children[1].children[0].children[1].children[0].data.trim()
+        });
       });
-			return halls;
+      return halls;
     } catch (err) {
       console.log(err);
     }
   }
 
-	async updateMachinesOnDatabase(schoolId, hallId) {
-		console.log("Updating machine list for " + schoolId + " hall " + hallId + " on MongoDB");
-		let machines = await this.getMachinesFromServer(schoolId, hallId);
-		let hall = await Hall.findOne({id: hallId});
-		hall.machines = machines;
-		await hall.save();
-	}
+  async updateMachinesOnDatabase(schoolId, hallId) {
+    try {
+      let machines = await this.getMachinesFromServer(schoolId, hallId);
+      let hall = await Hall.findOne({id: hallId});
+      hall.machines = machines;
+      console.log("Updating machine list for " + schoolId + " hall " + hallId + " on MongoDB. " + machines.length + " machines found.");
+      await hall.save();
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   async getMachinesFromServer(schoolId, hallId) { // often
     try {
@@ -62,19 +78,24 @@ export default class RoomListScraper {
       let trs = table.children[1].children;
       let machines = [];
       for (let i = 2; i < trs.length - 4; i++) {
-          let tr = trs[i];
-          if (tr.name == "tr") {
-            let children = tr.children;
-            let machineNumber = children[5].children[1].children[0].children[0].children[0].data.trim();
-            let type = children[7].children[1].children[0].children[0].data.trim();
-            let availability = children[9].children[1].children[0].children[0].data.trim();
+        let tr = trs[i];
+        if (tr.name == "tr") {
+          let children = tr.children;
+          let machineNumber = children[5].children[1].children[0].children[0].children[0].data.trim();
+          let type = children[7].children[1].children[0].children[0].data.trim();
+          let availability = children[9].children[1].children[0].children[0].data.trim();
 
-            machines.push({
-              number: parseInt(machineNumber),
-              type: type.toLowerCase().indexOf("washer") >= 0 ? "washer" : "dryer",
-              available: availability == "Available",
-            });
-          }
+          if (machineNumber === "NaN")
+            machineNumber = -1;
+
+          machines.push({
+            number: parseInt(machineNumber),
+            type: type.toLowerCase().indexOf("washer") >= 0
+              ? "washer"
+              : "dryer",
+            available: availability == "Available"
+          });
+        }
       }
 
       return machines;
