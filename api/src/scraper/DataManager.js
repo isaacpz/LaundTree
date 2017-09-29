@@ -1,7 +1,5 @@
+import * as firebase from "firebase-admin";
 import RoomListScraper from './RoomListScraper';
-import '../io/mongo';
-import Hall from '../io/models/hall';
-import School from '../io/models/school';
 
 export default class DataManager {
   constructor() {
@@ -24,7 +22,8 @@ export default class DataManager {
       let schools = await this.getSchools();
       for (let school of schools) {
         console.log("Updating machines for " + school.name + " (" + school.id + ")");
-        let halls = await Hall.find({});
+        let halls = await firebase.database().ref('halls/' + school.id).once('value');
+        halls = halls.val();
         for (let doc of halls) {
           try {
             await this.scraper.updateMachinesOnDatabase(school.id, doc.id);
@@ -51,10 +50,8 @@ export default class DataManager {
 
   getSchools = async () => {
     try {
-      let schoolData = await School.find({});
-      return schoolData.map((object) => {
-        return {name: object.name, id: object.id}
-      });
+      let schoolData = await firebase.database().ref('schools').once('value');
+      return schoolData.val();
     } catch (err) {
       console.log(err);
     }

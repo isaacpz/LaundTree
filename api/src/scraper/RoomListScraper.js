@@ -6,26 +6,20 @@ ex url: https://www.laundryalert.com/cgi-bin/STAN9568/LMPage?CallingPage=LMRoom&
 
 import cheerio from 'cheerio';
 import rp from 'request-promise';
-import Hall from '../io/models/hall';
+import * as firebase from "firebase-admin";
+
 
 export default class RoomListScraper {
 
   async updateRoomsOnDatabase(schoolId) {
     try {
-      console.log("Updating room list for " + schoolId + " on MongoDB");
+      console.log("Updating room list for " + schoolId + " on Firebase");
       let rooms = await this.getRoomsFromServer(schoolId);
       for (let room of rooms) {
         room.schoolId = schoolId;
-        //Insert if not exists
-        Hall.update({
-          schoolId: schoolId,
-          name: room.name
-        }, {
-          $setOnInsert: room
-        }, {
-          upsert: true
-        }, function(err, numUpdated) {});
       }
+
+      firebase.database().ref('halls/' + schoolId).set(rooms);
     } catch (err) {
       console.log(err);
     }
@@ -59,10 +53,8 @@ export default class RoomListScraper {
   async updateMachinesOnDatabase(schoolId, hallId) {
     try {
       let machines = await this.getMachinesFromServer(schoolId, hallId);
-      let hall = await Hall.findOne({id: hallId});
-      hall.machines = machines;
-      console.log("Updating machine list for " + schoolId + " hall " + hallId + " on MongoDB. " + machines.length + " machines found.");
-      await hall.save();
+      console.log("Updating machine list for " + schoolId + " hall " + hallId + " on Firebase. " + machines.length + " machines found.");
+      await firebase.database().ref('machines/' + schoolId + '-' + hallId).set(machines);
     } catch (err) {
       console.log(err);
     }
