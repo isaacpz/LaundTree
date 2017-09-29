@@ -8,14 +8,14 @@
   "license": "GNU",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "express": "^4.15.5",
+    "firebase": "^4.4.0",
+    "firebase-admin": "^5.3.0",
     "https": "^1.0.0",
-    "mongoose": "^4.11.10",
     "request": "^2.81.0",
     "request-promise": "^4.2.1"
   },
   "scripts": {
-    "transpile": "babel src --watch -d lib"
+    "transpile": "babel src --source-maps inline --watch -d lib --copy-files"
   },
   "devDependencies": {
     "babel-plugin-syntax-async-functions": "^6.13.0",

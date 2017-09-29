@@ -1,5 +1,5 @@
 yarn.lock
-settings.js
+settings/
 
 #Compiled code
 lib/
